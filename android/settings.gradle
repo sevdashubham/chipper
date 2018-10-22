@@ -1,0 +1,3 @@
+rootProject.name = 'chipper'
+
+include ':app'
