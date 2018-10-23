@@ -4,16 +4,13 @@ import moment from 'moment';
 import {colors} from '../utils/constants';
 
 class ListItem extends Component {
-    onRowPress() {
-        // Actions.employeeEdit({ employee: this.props.employee });
-    }
 
     render() {
         console.log(this.props);
         const {handle, text, timestamp} = this.props.tweet.item;
 
         return (
-            <TouchableWithoutFeedback onPress={this.onRowPress.bind(this)}>
+            <TouchableWithoutFeedback>
                 <View>
                     <View style={styles.card}>
                         <View style={styles.tweetHead}>

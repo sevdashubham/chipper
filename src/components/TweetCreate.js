@@ -1,31 +1,38 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import {AsyncStorage} from 'react-native';
-import { tweetCreate, tweetUpdate } from '../actions';
-import { Card, CardSection, Button } from './common';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {tweetCreate, tweetUpdate} from '../actions';
+import {Card, CardSection, Button} from './common';
 import TweetForm from './TweetForm';
+import firebase from "firebase";
 
 class TweetCreate extends Component {
-    onButtonPress() {
-        const { text } = this.props;
-        const timestamp = Math.floor((new Date()).getTime() / 1000);
-        this.getUserProfile().then((user) =>{
-            const handle = user.handle;
-                this.props.tweetCreate({handle, text, timestamp })}
-        );
+    state = {
+        handle: ''
+    };
+    componentDidMount() {
+        this.getUserProfile();
+    }
 
+    onButtonPress() {
+        const {text} = this.props;
+        const {handle} = this.state;
+        const timestamp = Math.floor((new Date()).getTime() / 1000);
+        this.props.tweetCreate({handle, text, timestamp});
     }
-async getUserProfile() {
-    try {
-        const value = await AsyncStorage.getItem('userProfile');
-        if (value !== null) {
-            // We have data!!
-            return JSON.parse(value);
-        }
-    } catch (error) {
-        // Error retrieving data
+
+    getUserProfile() {
+        const {currentUser} = firebase.auth();
+        firebase.database().ref(`/user_profiles/${currentUser.uid}`)
+            .on('value', snapshot => {
+                const user = snapshot.val();
+                console.log(JSON.stringify(user));
+                this.setState({
+                    handle: user.handle
+                });
+            });
     }
-}
+
+
     render() {
         return (
             <Card>
@@ -41,9 +48,9 @@ async getUserProfile() {
 }
 
 const mapStateToProps = (state) => {
-    const { text } = state.tweetForm;
+    const {text} = state.tweetForm;
 
-    return { text };
+    return {text};
 };
 
 export default connect(mapStateToProps, {

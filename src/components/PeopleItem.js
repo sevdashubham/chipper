@@ -33,9 +33,11 @@ class PeopleItem extends Component {
             <TouchableWithoutFeedback>
                 <View>
                     <View style={styles.container}>
+                        <View>
                         <Text style={styles.titleStyle} onPress={this.goToProfile.bind(this, uid)}>
                             {name}
                         </Text>
+                        </View>
                         <View style={styles.row}>{
                             (following.indexOf(uid) > -1) ?
                                 <Button style={styles.button} onPress={this.onUnfollow.bind(this)}
