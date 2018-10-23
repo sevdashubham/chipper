@@ -1,4 +1,4 @@
-# chipper
+# Chipper
 
 # Getting started
 
