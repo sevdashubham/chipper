@@ -1,6 +1,9 @@
 import firebase from 'firebase';
 import {tweetConstants} from '../constants';
-import {userFetchFollowing} from 'user.actions';
+import {Actions} from "react-native-router-flux";
+import {
+    AsyncStorage
+} from 'react-native';
 
 export const tweetUpdate = ({prop, value}) => {
     return {
@@ -9,23 +12,22 @@ export const tweetUpdate = ({prop, value}) => {
     };
 };
 
-export const tweetCreate = ({text, timestamp}) => {
+export const tweetCreate = ({handle, text, timestamp}) => {
     console.log('XXXXX' + text);
     const {currentUser} = firebase.auth();
 
     return (dispatch) => {
         firebase.database().ref(`/tweets/${currentUser.uid}`)
-            .push({text, timestamp})
+            .push({ handle, text, timestamp})
             .then(() => {
+                Actions.main();
                 dispatch({type: tweetConstants.TWEET_CREATE});
-                dispatch(userFetchFollowing())
             });
     };
 };
 
 export const tweetsFetch = ({uid}) => {
     const {currentUser} = firebase.auth();
-
     return (dispatch) => {
         firebase.database().ref(`/tweets/${uid}`)
             .on('value', snapshot => {
@@ -36,28 +38,23 @@ export const tweetsFetch = ({uid}) => {
 
 export const tweetsFetchAll = (following) => {
     return (dispatch) => {
-        console.log(following);
         const {currentUser} = firebase.auth();
         let feedToFetch = [currentUser.uid];
-        // const feedToFetch = ["ph9UFk2d8kNsc5hvG0F1nWIbksJ2", "Yq9cruNBOZOzzpaAXNlqo6vsr8v2"];
         if (following instanceof Array && following !== null) {
             feedToFetch = feedToFetch.concat(following);
             console.log(feedToFetch);
         }
-        let promises = feedToFetch.map(function (key) {
-            return firebase.database().ref("/tweets/").child(key).once("value");
-        });
-        Promise.all(promises).then(function (snapshots) {
-            let arr = [];
-            snapshots.forEach(function (snapshot) {
+        let arr = [];
+        feedToFetch.map(function (key) {
+            return firebase.database().ref("/tweets/").child(key).on('value', snapshot => {
                 snapshot.forEach(function (item) {
-                    // arr.push(item.val())
                     arr = [...arr, item.val()];
                 });
+                dispatch({type: tweetConstants.TWEETS_FETCH_SUCCESS, payload: arr});
             });
-            console.log(arr);
-            dispatch({type: tweetConstants.TWEETS_FETCH_SUCCESS, payload: arr})
         });
     };
 
 };
+
+

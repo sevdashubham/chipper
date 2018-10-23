@@ -1,7 +1,6 @@
 import React from 'react'
 import {StyleSheet, Text, TextInput, View, Button} from 'react-native'
 import {auth} from "../config/firebase";
-import {colors} from '../utils/constants';
 import firebase from 'firebase';
 import {Actions} from "react-native-router-flux";
 
@@ -11,9 +10,7 @@ export default class SignUp extends React.Component {
 
     handleSignUp = () => {
         const {email, password, handle, name} = this.state;
-
-        auth
-            .createUserWithEmailAndPassword(email, password)
+        auth.createUserWithEmailAndPassword(email, password)
             .then(data => {
                 if (data.user) {
                     console.log(data.user.uid);
@@ -35,11 +32,7 @@ export default class SignUp extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text>Sign Up</Text>
-                {this.state.errorMessage &&
-                <Text style={{color: 'red'}}>
-                    {this.state.errorMessage}
-                </Text>}
+
                 <TextInput
                     placeholder="Email"
                     autoCapitalize="none"
@@ -69,11 +62,14 @@ export default class SignUp extends React.Component {
                     onChangeText={name => this.setState({name})}
                     value={this.state.name}
                 />
-
+                {this.state.errorMessage &&
+                <Text style={{color: 'red', padding: 5}}>
+                    {this.state.errorMessage}
+                </Text>}
                 <Button title="Sign Up" onPress={this.handleSignUp}/>
                 <Button
                     title="Already have an account? Login"
-                    onPress={() => this.props.navigation.navigate('Login')}
+                    onPress={() => Actions.auth()}
                 />
             </View>
         )
@@ -84,13 +80,15 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: 'white'
     },
     textInput: {
         height: 40,
         width: '90%',
-        borderColor: colors.PRIMARY,
+        borderColor: 'gray',
         borderWidth: 1,
-        marginTop: 8
+        marginTop: 8,
+        padding: 5
     }
 });

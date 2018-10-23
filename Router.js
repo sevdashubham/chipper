@@ -5,14 +5,16 @@ import TweetCreate from './src/components/TweetCreate';
 import Login from "./src/components/Login";
 import SignUp from './src/components/SignUp';
 import PeopleList from "./src/components/PeopleList";
+import Profile from "./src/components/Profile";
+
 
 const RouterComponent = () => {
     return (
         <Router>
             <Scene key="root">
             <Scene key="auth">
-                <Scene key="login" component={Login} title="Please Login" />
-                <Scene key="SignUp" component={SignUp} title="Please SignUp" />
+                <Scene key="login" component={Login} title="Login" />
+                <Scene key="SignUp" component={SignUp} title="SignUp" />
             </Scene>
 
             <Scene key="main">
@@ -27,7 +29,8 @@ const RouterComponent = () => {
                     initial
                 />
                 <Scene key="searchPeople" component={PeopleList} title="People" />
-                <Scene key="tweetCreate" component={TweetCreate} title="Create Tweet" />
+                <Scene key="tweetCreate" component={TweetCreate} title="Post Tweet" />
+                <Scene key="profile" component={Profile} title="Profile"/>
             </Scene>
             </Scene>
         </Router>

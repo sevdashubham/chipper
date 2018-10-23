@@ -1,6 +1,6 @@
 import firebase from 'firebase';
 import {userConstants} from '../constants';
-import {tweetsFetchAll} from './tweet.actions'
+import {tweetsFetchAll} from './tweet.actions';
 
 export const userCreate = ({name, handle}) => {
     const {currentUser} = firebase.auth();
@@ -28,8 +28,22 @@ export const userFollow = ({uid, handle, name}) => {
                         dispatch(userFetchFollowing);
                         dispatch({type: userConstants.USER_FOLLOW_SUCCESS});
                     });
-
+            }).then(() => {
+            const databaseRef = firebase.database().ref('user_profiles').child(uid).child('followersCount');
+            databaseRef.transaction(function (searches) {
+                console.log(searches);
+                searches++;
+                console.log(searches);
+                return searches;
             });
+            const databaseRefFollowing = firebase.database().ref('user_profiles').child(currentUser.uid).child('followingsCount');
+            databaseRefFollowing.transaction(function (searches) {
+                console.log(searches);
+                searches++;
+                console.log(searches);
+                return searches;
+            });
+        });
     };
 };
 
@@ -46,16 +60,31 @@ export const userUnfollow = ({uid, handle, name}) => {
                     .then(() => {
                         dispatch(userFetchFollowing);
                         dispatch({type: userConstants.USER_UNFOLLOW_SUCCESS});
+                    }).then(() => {
+                    const databaseRef = firebase.database().ref('user_profiles').child(uid).child('followersCount');
+                    databaseRef.transaction(function (searches) {
+                        console.log(searches);
+                        searches--;
+                        console.log(searches);
+                        return (searches);
                     });
+                    const databaseRefFollowing = firebase.database().ref('user_profiles').child(currentUser.uid).child('followingsCount');
+                    databaseRefFollowing.transaction(function (searches) {
+                        console.log(searches);
+                        searches--;
+                        console.log(searches);
+                        return searches;
+                    });
+                });
             });
     }
 };
 
-export const userFetch = ({uid}) => {
+export const userFetch = () => {
     const {currentUser} = firebase.auth();
 
     return (dispatch) => {
-        firebase.database().ref(`/user_profiles/${uid}`)
+        firebase.database().ref(`/user_profiles/${currentUser.uid}`)
             .on('value', snapshot => {
                 dispatch({type: userConstants.USER_FETCH_SUCCESS, payload: snapshot.val()});
             });
@@ -74,19 +103,17 @@ export const userFetchAll = () => {
 export const userFetchFollowing = () => {
     const {currentUser} = firebase.auth();
     return (dispatch) => {
+        dispatch(userFetch);
         let feedToFetch = [];
         firebase.database().ref(`/following/${currentUser.uid}`)
             .on('value', snapshot => {
                 if (snapshot.val() !== null) {
                     feedToFetch = Object.keys(snapshot.val());
-                    console.log(feedToFetch);
-                    dispatch(tweetsFetchAll(feedToFetch));
-                    dispatch({type: userConstants.USER_FETCH_FOLLOWING, payload: feedToFetch});
                 } else {
                     feedToFetch = [];
-                    dispatch(tweetsFetchAll(feedToFetch));
-                    dispatch({type: userConstants.USER_FETCH_FOLLOWING, payload: feedToFetch});
                 }
+                dispatch(tweetsFetchAll(feedToFetch));
+                dispatch({type: userConstants.USER_FETCH_FOLLOWING, payload: feedToFetch});
             });
     };
 };
