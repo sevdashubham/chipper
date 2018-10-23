@@ -1,5 +1,11 @@
 # chipper
 
+# Getting started
+
+1. Install React Native as described at [https://facebook.github.io/react-native/docs/getting-started.html#content](https://facebook.github.io/react-native/docs/getting-started.html#content)
+2. Clone this repository
+3. Run `npm install` , all required components will be installed automatically.
+4. Run `react-native run-ios`
 Twitter clone with the following features:
 
 - [x] user sign up/login
