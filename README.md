@@ -6,6 +6,8 @@
 2. Clone this repository
 3. Run `npm install` , all required components will be installed automatically.
 4. Run `react-native run-ios`
+
+# Features
 Twitter clone with the following features:
 
 - [x] user sign up/login
